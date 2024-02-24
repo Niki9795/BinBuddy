@@ -1,32 +1,16 @@
 from flask import Flask, request, jsonify
-from torchvision import models, transforms
-from PIL import Image
-import json
-import torch
-import torch.nn as nn
-from flask_cors import CORS  # Import CORS
+from flask_cors import CORS
+from google.cloud import vision
+import os
+import io
 
 app = Flask(__name__)
-CORS(app)  
+CORS(app)
 
-# Load pre-trained ResNet50 model
-model = models.resnet50(pretrained=True)
-num_classes = 3
-model.fc = nn.Linear(model.fc.in_features, num_classes)
-model.eval()
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "server/client_secrets.json"
 
-# Image preprocessing transform
-transform = transforms.Compose([
-    transforms.Resize(256),
-    transforms.CenterCrop(224),
-    transforms.ToTensor(),
-    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-])
-
-# Load custom labels from JSON file
-with open('server/label.json') as f:
-    label_data = json.load(f)
-    custom_labels = label_data['labels']
+# Instantiates a client
+client = vision.ImageAnnotatorClient()
 
 @app.route('/')
 def index():
@@ -35,32 +19,41 @@ def index():
 @app.route('/predict', methods=['POST'])
 def predict():
     if 'file' not in request.files:
-        return jsonify({'error': 'No file provided'})
+        return jsonify({'error': 'No file provided'}), 400
 
     file = request.files['file']
     if file.filename == '':
-        return jsonify({'error': 'No selected file'})
+        return jsonify({'error': 'No selected file'}), 400
 
-    # Preprocess image
-    image = Image.open(file)
-    input_tensor = transform(image)
-    input_batch = input_tensor.unsqueeze(0)
+    # Reads the image file into memory
+    content = file.read()
+    image = vision.Image(content=content)
 
-    # Make prediction
-    with torch.no_grad():
-        output = model(input_batch)
+    # Performs label detection on the image file
+    response = client.label_detection(image=image)
+    labels = response.label_annotations
 
-    # Interpret prediction
-    _, predicted_idx = torch.max(output, 1)
-    predicted_label = predicted_idx.item()
+    # Initialize variables to determine the type of recycling
+    food = False
+    recycling = False
 
-    # Verify if the predicted label is within the valid range
-    if 0 <= predicted_label < len(custom_labels):
-        # Get the predicted label
-        predicted_class = custom_labels[predicted_label]
-        return jsonify({'predicted_class': predicted_class})
+    # Check labels to set food and recycling flags
+    for label in labels:
+        label_desc = label.description.lower()
+        if label_desc in ["food", "fruit", "vegetable"]:
+            food = True
+        if label_desc in ["cardboard", "glass", "plastic", "drink"]:
+            recycling = True
+
+    # Determine the type of waste based on flags
+    if food:
+        predicted_class = "Compostable"
+    elif recycling:
+        predicted_class = "Recyclable"
     else:
-        return jsonify({'error': 'Predicted label index is out of range'})
+        predicted_class = "Non-Recyclable"
+
+    return jsonify({'predicted_class': predicted_class})
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
