@@ -4,7 +4,7 @@ import * as ImagePicker from 'expo-image-picker';
 
 const ImageUploader = () => {
   const [selectedImage, setSelectedImage] = useState(null);
-  const [predictedClass, setPredictedClass] = useState(null);
+  const [predictedClass, setPredictedClass] = useState(null); // State to hold the predicted class
 
   const handleImageChange = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -14,30 +14,32 @@ const ImageUploader = () => {
       quality: 1,
     });
 
+    // If an image is selected, set it, else show an alert
     if (!result.cancelled && result.assets && result.assets.length > 0) {
       setSelectedImage(result.assets[0].uri);
-      uploadImage(result.assets[0].uri);
+      setPredictedClass(null); // Reset predicted class when a new image is selected
     } else {
       Alert.alert('Error', 'No image selected or image selection cancelled.');
     }
   };
 
-  const uploadImage = async (uri) => {
-    if (!uri) {
-      console.error('No image URI to upload');
-      Alert.alert('Error', 'There was an error obtaining the image URI.');
+  const uploadImage = async () => {
+    if (!selectedImage) {
+      Alert.alert('Error', 'No image selected.');
       return;
     }
 
+    // Prepare the formData for sending image to server
     const formData = new FormData();
     formData.append('file', {
-      uri: Platform.OS === 'android' ? uri : uri.replace('file://', ''),
-      type: 'image/jpeg', // or your image type
+      uri: Platform.OS === 'android' ? selectedImage : selectedImage.replace('file://', ''),
+      type: 'image/jpeg',
       name: 'image.jpg',
     });
 
+    // Attempt to upload the image to the server
     try {
-      const response = await fetch('http://localhost:5000/predict', {
+      const response = await fetch('http://144.118.77.134:5000/predict', {
         method: 'POST',
         body: formData,
         headers: {
@@ -46,6 +48,7 @@ const ImageUploader = () => {
       });
 
       const result = await response.json();
+      // Set the predicted class state to the result from the server
       if (result.predicted_class) {
         setPredictedClass(result.predicted_class);
       } else {
@@ -61,8 +64,14 @@ const ImageUploader = () => {
     <View style={styles.container}>
       <Text style={styles.title}>Image Classification</Text>
       <Button title="Select Image" onPress={handleImageChange} />
-      {selectedImage && <Image source={{ uri: selectedImage }} style={styles.image} />}
-      {predictedClass && <Text>Predicted Class: {predictedClass}</Text>}
+      {selectedImage && (
+        <>
+          <Image source={{ uri: selectedImage }} style={styles.image} />
+          <Button title="Upload Image" onPress={uploadImage} />
+        </>
+      )}
+      {/* Display the predicted class below the image */}
+      {predictedClass && <Text style={styles.predictionText}>Predicted Class: {predictedClass}</Text>}
     </View>
   );
 };
@@ -83,9 +92,15 @@ const styles = StyleSheet.create({
     height: 200,
     marginVertical: 10,
   },
+  predictionText: {
+    fontSize: 18,
+    marginVertical: 8,
+  },
 });
 
 export default ImageUploader;
+
+
 
 
 
