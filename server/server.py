@@ -47,11 +47,11 @@ def predict():
 
     # Determine the type of waste based on flags
     if food:
-        predicted_class = "Compostable"
+        predicted_class = "Eco-friendly and compostable – let nature do its thing!"
     elif recycling:
-        predicted_class = "Recyclable"
+        predicted_class = "Reduce, reuse, recycle – this item is doing its part!"
     else:
-        predicted_class = "Non-Recyclable"
+        predicted_class = "Not recyclable, but still valuable! Dispose of this item responsibly."
 
     return jsonify({'predicted_class': predicted_class})
 

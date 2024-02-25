@@ -128,7 +128,7 @@ const ImageUploader = () => {
           )}
         </>
       )}
-      {predictedClass && <Text style={styles.predictionText}>Predicted Class: {predictedClass}</Text>}
+      {predictedClass && <Text style={styles.predictionText}>It is: {predictedClass}</Text>}
     </View>
   );
 };
@@ -213,6 +213,8 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: '#333',
     marginTop: 20,
+    marginLeft: 25,
+    marginRight: 25,
     },
 });
 
