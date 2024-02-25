@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, TouchableOpacity, Image, StyleSheet, Alert, Platform, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  StyleSheet,
+  Alert,
+  Platform,
+  ActivityIndicator,
+} from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Camera } from 'expo-camera';
 import { Ionicons } from '@expo/vector-icons';
@@ -94,12 +103,14 @@ const ImageUploader = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Image Classification</Text>
-      <TouchableOpacity style={styles.button} onPress={handleImageChange}>
-        <Text style={styles.buttonText}>Select Image</Text>
+      <View style={styles.buttonContainer}>
+      <TouchableOpacity style={[styles.buttonIcon, styles.buttonSelect]} onPress={handleImageChange}>
+        <Ionicons name="image-outline" size={24} color="white" />
       </TouchableOpacity>
-      <TouchableOpacity style={styles.buttonIcon} onPress={openCamera}>
-        <Ionicons name="camera-outline" size={24} color="white" />
-      </TouchableOpacity>
+        <TouchableOpacity style={[styles.buttonIcon, styles.buttonCamera]} onPress={openCamera}>
+          <Ionicons name="camera-outline" size={24} color="white" />
+        </TouchableOpacity>
+      </View>
       {selectedImage && (
         <>
           <View style={styles.imageContainer}>
@@ -124,28 +135,47 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F5FCFF', // Light background color
+    backgroundColor: '#F5FCFF',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
-    color: '#333', // Dark text for better contrast
+    color: '#333',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    paddingHorizontal: 30,
   },
   button: {
-    backgroundColor: '#4CAF50', // A green color for the button
-    padding: 10,
+    backgroundColor: '#4CAF50',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
     borderRadius: 20,
-    marginBottom: 10,
   },
   buttonText: {
-    color: '#FFFFFF', // White text for the button
+    color: '#FFFFFF',
     fontSize: 18,
     fontWeight: '500',
   },
+  buttonIcon: {
+    backgroundColor: '#4CAF50',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 50,
+    width: 50,
+    borderRadius: 25,
+    margin: 15,
+    // Adjust margins as needed for alignment
+    marginLeft: 10,
+    marginHorizontal: 55,
+  },
   imageContainer: {
-    elevation: 5, // Adds shadow for Android
-    shadowColor: '#000', // Shadow for iOS
+    elevation: 5,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.8,
     shadowRadius: 2,
@@ -154,7 +184,7 @@ const styles = StyleSheet.create({
   image: {
     width: 250,
     height: 250,
-    borderRadius: 10, // Rounded corners for the image
+    borderRadius: 10,
   },
   predictionText: {
     fontSize: 18,
@@ -162,17 +192,7 @@ const styles = StyleSheet.create({
     color: '#333',
     marginTop: 20,
   },
-
-  buttonIcon: {
-    backgroundColor: '#4CAF50', // You can adjust the color as needed
-    padding: 10,
-    borderRadius: 20,
-    marginBottom: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 50, // Adjust based on your UI needs
-    width: 50, // Adjust based on your UI needs
-  },
 });
+
 
 export default ImageUploader;
