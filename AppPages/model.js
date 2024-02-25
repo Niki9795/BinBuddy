@@ -202,6 +202,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.8,
     shadowRadius: 2,
     marginBottom: 15,
+    marginTop: 20,
   },
   image: {
     width: 250,
