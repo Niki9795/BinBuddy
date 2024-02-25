@@ -40,7 +40,7 @@ def predict():
     # Check labels to set food and recycling flags
     for label in labels:
         label_desc = label.description.lower()
-        if label_desc in ["food", "fruit", "vegetable", "flower"]:
+        if label_desc in ["food", "fruit", "vegetable", "flower", "human"]:
             food = True
         if label_desc in ["cardboard", "glass", "plastic", "drink", "metal"]:
             recycling = True

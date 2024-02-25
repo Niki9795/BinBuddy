@@ -12,6 +12,7 @@ import {
 import * as ImagePicker from 'expo-image-picker';
 import { Camera } from 'expo-camera';
 import { Ionicons } from '@expo/vector-icons';
+import logo from '../BinnyBoy.png';
 
 const ImageUploader = () => {
   const [hasPermission, setHasPermission] = useState(null);
@@ -102,11 +103,13 @@ const ImageUploader = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Image Classification</Text>
+      <Image source={logo} style={styles.logo} /> 
+      <Text style={styles.title}>Bin Buddy</Text>
+      <Text style={styles.subtitle}>Your Trashy Bestie</Text>
       <View style={styles.buttonContainer}>
-      <TouchableOpacity style={[styles.buttonIcon, styles.buttonSelect]} onPress={handleImageChange}>
-        <Ionicons name="image-outline" size={24} color="white" />
-      </TouchableOpacity>
+        <TouchableOpacity style={[styles.buttonIcon, styles.buttonSelect]} onPress={handleImageChange}>
+          <Ionicons name="image-outline" size={24} color="white" />
+        </TouchableOpacity>
         <TouchableOpacity style={[styles.buttonIcon, styles.buttonCamera]} onPress={openCamera}>
           <Ionicons name="camera-outline" size={24} color="white" />
         </TouchableOpacity>
@@ -135,20 +138,42 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+    backgroundColor: '#FFFFFF', // This sets the background color of the entire app
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
+  logo: {
+    width: 100, // Adjust the width as needed
+    height: 100, // Adjust the height as needed
+    resizeMode: 'contain',
     marginBottom: 20,
+    borderRadius: 50,
+  },
+  subtitle: {
+    marginBottom: 50
+  },
+
+  title: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    fontFamily: 'YourCustomFont',
+    textAlign: 'center',
     color: '#333',
+    padding: 10,
+     // Light blue background
+    borderRadius: 10,
+    overflow: 'hidden',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 1.5,
+     // Add space between title and buttons
   },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
-    paddingHorizontal: 30,
+    paddingHorizontal: 130,
   },
   button: {
     backgroundColor: '#4CAF50',
@@ -168,10 +193,7 @@ const styles = StyleSheet.create({
     height: 50,
     width: 50,
     borderRadius: 25,
-    margin: 15,
-    // Adjust margins as needed for alignment
-    marginLeft: 10,
-    marginHorizontal: 55,
+    margin: 10,
   },
   imageContainer: {
     elevation: 5,
@@ -185,14 +207,15 @@ const styles = StyleSheet.create({
     width: 250,
     height: 250,
     borderRadius: 10,
-  },
-  predictionText: {
+    },
+    predictionText: {
     fontSize: 18,
     fontWeight: '500',
     color: '#333',
     marginTop: 20,
-  },
+    },
 });
+
 
 
 export default ImageUploader;
